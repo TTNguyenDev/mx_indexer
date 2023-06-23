@@ -1,32 +1,32 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { IsEmail, IsNotEmpty, IsString } from "class-validator"
+import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
 
 export class RegisterDTO {
     @IsEmail()
     @IsNotEmpty()
-    email: string
+    email: string;
 
     @IsNotEmpty()
     @IsString()
-    name: string
+    name: string;
 
     @IsNotEmpty()
     @IsString()
-    password: string
+    password: string;
 
     @IsNotEmpty()
     @IsString()
-    repeatPassword: string
+    repeatPassword: string;
 }
 
 @Controller('auth')
 export class AuthController {
-    constructor(private authService: AuthService) {}
+    constructor(private authService: AuthService) { }
 
     @Post('register')
     register(@Body() dto: RegisterDTO) {
-        console.log("here")
-        return this.authService.register(dto)
+        console.log('here');
+        return this.authService.register(dto);
     }
 }

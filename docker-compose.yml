@@ -1,19 +1,13 @@
 version: '3.8'
 services:
-  postgres:
-    image: postgres:13-alpine
-    ports:
-      - 5432:5432
+  db:
+    image: postgres:13
+    restart: always
     env_file:
       - .env
+    ports:
+      - '5432:5432'
     volumes:
-      - postgres:/var/lib/postgresql/data
-    networks:
-      - nest-init
-
+      - pgdata:/var/lib/postgresql/data
 volumes:
-   postgres:
-      name: nest-init-docker-db
-
-networks:
-   nest-init:
+  pgdata:
