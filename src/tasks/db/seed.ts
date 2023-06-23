@@ -11,6 +11,7 @@ import { typeOrmConfig } from '../../config';
 import Appointment from '../../models/Appointment';
 import Doctor from '../../models/Doctor';
 import Patient from '../../models/Patient';
+import ScEvent from '../../models/ScEvent';
 
 (async () => {
     console.log('Beginning dbseed task.');
@@ -19,6 +20,14 @@ import Patient from '../../models/Patient';
     console.log('PG connected.');
 
     // Create seed data.
+    //
+    const scEvent = conn.getRepository(ScEvent);
+    let doctorx = new ScEvent();
+    doctorx.txHash = 'xxx';
+    doctorx.timestamp = 10;
+    doctorx = await scEvent.save(doctorx); // re-assign to know assigned id
+    console.log(`\nScEvent saved. id = ${doctorx.txHash}`);
+
     const doctorRepo = conn.getRepository(Doctor);
     let doctor = new Doctor();
     doctor.name = 'Jane';

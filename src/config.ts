@@ -7,6 +7,7 @@ import {
 import Appointment from './models/Appointment';
 import Doctor from './models/Doctor';
 import Patient from './models/Patient';
+import ScEvent from './models/ScEvent';
 
 const typeOrmConfig: PostgresConnectionOptions = {
     type: "postgres",
@@ -20,7 +21,8 @@ const typeOrmConfig: PostgresConnectionOptions = {
     entities: [
         Appointment,
         Doctor,
-        Patient
+        Patient,
+        ScEvent
     ]
 };
 

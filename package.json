@@ -22,6 +22,7 @@
   "scripts": {
     "build": "tsc",
     "dbseed": "npm run build && node dist/tasks/db/seed.js",
+    "main": "npm run build && node dist/index.js",
     "test": "ts-mocha test/**/*.spec.ts"
   }
 }

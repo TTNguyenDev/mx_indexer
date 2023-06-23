@@ -4,20 +4,32 @@ import 'reflect-metadata';
 import { createConnection } from 'typeorm';
 
 import { typeOrmConfig } from './config';
-import Appointment from './models/Appointment';
-import Doctor from './models/Doctor';
-import Patient from './models/Patient';
+import { CrawlerService } from './crawler/crawler.service';
+import ScEvent from './models/ScEvent';
+
+const TRACKING_ADDRESS =
+    'erd1qqqqqqqqqqqqqpgqv49mkah22xp5eypz78jc3t56yyww59tgjpqsu5lhht';
+const TRACKING_EVENTS = ['propose_event'];
 
 (async () => {
     // App's main content. For example, this could be an Express or console app.
     const conn = await createConnection(typeOrmConfig);
     console.log('PG connected. App is ready to do work.');
 
-    // Do work with Appointment, Doctor, and/or Patient
+    let crawlerService = new CrawlerService();
+    let result = await crawlerService.getTxlist(TRACKING_ADDRESS);
 
-    // Closing the TypeORM db connection at the end of the app prevents the process from hanging at
-    // the end (ex. when you use ctrl-c to stop the process in your console, or when Docker sends
-    // the signal to terminate the process).
+    const scEvent = conn.getRepository(ScEvent);
+    for (const r of result) {
+
+        let event = new ScEvent();
+        event.txHash = r.txHash;
+        event.timestamp = r.timestamp!;
+        event.contractAddress = r.address!;
+        event.eventName = r.eventName!;
+        event = await scEvent.save(event); // re-assign to know assigned id
+        console.log(`\nEvent saved: ${JSON.stringify(event)}`);
+    }
     await conn.close();
     console.log('PG connection closed.');
 })();
