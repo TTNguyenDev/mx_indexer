@@ -1,0 +1,105 @@
+urls:
+  api: ${ELROND_API}
+  swagger:
+    - 'https://devnet-microservice.multiversx.com'
+    - 'https://testnet-microservice.multiversx.com'
+    - 'https://microservice.multiversx.com'
+  redis: ${REDIS_URL}
+wallet:
+  ashDepositor:
+    - erd1qqqqqqqqqqqqqpgq46skppyhvmjg74qvw4jggjmew79jakf2jpqsn708kf
+  booster:
+    - erd1qqqqqqqqqqqqqpgql7ucgq9dk55yx99ymnr4lk77x0c5qtfpjpqsuwe999
+  dao:
+    - erd1qqqqqqqqqqqqqpgqw9623l42csqht9apczzg7xr0x3nhgxt0jpqsyupewg
+  daoRouter:
+    - erd1qqqqqqqqqqqqqpgqsvdstcyv9qxdcqau83q9wd85f796sup7jpqscel6uj
+  lpRewarder:
+    - erd1qqqqqqqqqqqqqpgqhcharqce765np05un44rsvtc58vz8jspjpqsdlqfu9
+  lqash:
+    - erd1qqqqqqqqqqqqqpgqmgusjjvz6pak6j87q3es6ug8xp6kfc0ajpqsrvn9rc
+  lqashStaking:
+    - erd1qqqqqqqqqqqqqpgqsqz7n6am7fwtghmxpczflpmhz3z0f0phjpqsf8h8md
+  lqmex:
+    - erd1qqqqqqqqqqqqqpgqlwja3dshp8ykd03ldh8lez30lfhcg80ujpqsn3jcny
+  metastakingRewarder:
+    - erd1qqqqqqqqqqqqqpgqwuuh63nvaf7zt0gxylv8dlgtdla60ll8jpqsjsm8dv
+  mexBooster:
+    - erd1qqqqqqqqqqqqqpgqwuuh63nvaf7zt0gxylv8dlgtdla60ll8jpqsjsm8dv
+  mexDepositor:
+    - erd1qqqqqqqqqqqqqpgqwuuh63nvaf7zt0gxylv8dlgtdla60ll8jpqsjsm8dv
+  mexRouterProxy:
+    - erd1qqqqqqqqqqqqqpgqwuuh63nvaf7zt0gxylv8dlgtdla60ll8jpqsjsm8dv
+  routerProxy:
+    - erd1qqqqqqqqqqqqqpgqrfrn2rdvwjz47gv7h0nkxkr4n9ufy6p7jpqsznnvz7
+  treasury:
+    - erd1qqqqqqqqqqqqqpgqhtxntxg2s4epq9as8397drjkfcnxvjyrjpqsdvgjf3
+  votingEscrow:
+    - erd1qqqqqqqqqqqqqpgqhp4t42p57efkw597nrqp57mx4xmtc9h8jpqsucrx3t
+abi:
+  ashDepositor:
+    - './src/abi/ash_depositor.abi.json'
+  booster:
+    - './src/abi/booster.abi.json'
+  dao:
+    - './src/abi/dao.abi.json'
+  daoRouter:
+    - './src/abi/dao_router.abi.json'
+  lpRewarder:
+    - './src/abi/lp_rewarder.abi.json'
+  lqash:
+    - './src/abi/lqash.abi.json'
+  lqashStaking:
+    - './src/abi/lqash_staking.abi.json'
+  lqmex:
+    - './src/abi/lqmex.abi.json'
+  metastakingRewarder:
+    - './src/abi/metastaking_rewarder.abi.json'
+  mexBooster:
+    - './src/abi/mex_booster.abi.json'
+  mexDepositor:
+    - './src/abi/mex_depositor.abi.json'
+  mexRouterProxy:
+    - './src/abi/mex_router_proxy.abi.json'
+  routerProxy:
+    - './src/abi/router_proxy.abi.json'
+  treasury:
+    - './src/abi/treasury.abi.json'
+  votingEscrow:
+    - './src/abi/voting_escrow.abi.json'
+database:
+  host: 'localhost'
+  port: 3306
+  username: 'root'
+  password: 'root'
+  name: 'example'
+features:
+  publicApi:
+    enabled: true
+    port: 3001
+  privateApi:
+    enabled: true
+    port: 4000
+  cacheWarmer:
+    enabled: true
+    port: 5201
+  transactionProcessor:
+    enabled: true
+    port: 5202
+    maxLookBehind: 100
+  queueWorker:
+    enabled: true
+    port: 8000
+  keepAliveAgent:
+    enabled: true
+nativeAuth:
+  maxExpirySeconds:
+  acceptedOrigins:
+    - utils.multiversx.com
+security:
+  admins:
+rateLimiterSecret:
+keepAliveTimeout:
+  downstream: 61000
+  upstream: 60000
+useCachingInterceptor: false

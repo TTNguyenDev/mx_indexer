@@ -1,8 +1,22 @@
 import fetch from "node-fetch";
 import { Event } from "./../crawler.entity";
 import { DataSource, Repository } from "typeorm";
-import { ProposeEvent } from "src/models/ProposeEvent";
-import { VoteEvent } from "src/models/VoteEvent";
+
+// import { ApiConfigService } from "src/common/api-config/api.config.service";
+import {
+  AbiRegistry,
+  Address,
+  SmartContract,
+  ResultsParser,
+  BinaryCodec,
+  BigUIntType,
+  CustomType,
+  StructType,
+} from "@multiversx/sdk-core/out";
+import { ApiNetworkProvider } from "@multiversx/sdk-network-providers/out";
+import * as fs from "fs";
+import { DAOProposal, ProposeEvent } from "./../../models/ProposeEvent";
+import { VoteEvent } from "./../../models/VoteEvent";
 
 // Defaults
 const BASE_URL = "https://devnet-api.multiversx.com";
@@ -11,10 +25,38 @@ export class DaoCrawlerService {
   address: string;
   events: string[];
   dataSource: DataSource;
-  constructor(address: string, events: string[], dataSource: DataSource) {
+  provider: any;
+  sm: any;
+  abi: AbiRegistry;
+
+  constructor(
+    // private readonly apiConfigService: ApiConfigService,
+    address: string,
+    events: string[],
+    dataSource: DataSource
+  ) {
+    const abiPath = "./src/abi/dao.abi.json";
+    const contractAddress =
+      "erd1qqqqqqqqqqqqqpgqw9623l42csqht9apczzg7xr0x3nhgxt0jpqsyupewg";
+    const provider = "https://devnet-api.multiversx.com";
+    const abi = this.getAbiRegistry(abiPath);
+    if (abi != undefined) {
+      this.abi = abi;
+      this.sm = new SmartContract({
+        address: new Address(contractAddress),
+        abi: this.getAbiRegistry(abiPath) as AbiRegistry,
+      });
+      this.provider = new ApiNetworkProvider(provider);
+    }
+
     this.address = address;
     this.events = events;
     this.dataSource = dataSource;
+  }
+
+  getAbiRegistry(path: string): AbiRegistry | undefined {
+    const data = fs.readFileSync(path, { encoding: "utf-8" });
+    return AbiRegistry.create(JSON.parse(data));
   }
 
   async txCount(): Promise<number> {
@@ -43,10 +85,8 @@ export class DaoCrawlerService {
   }
 
   async getTransactionDetail(transactionHash: string): Promise<any> {
-    const requestUrl = `${BASE_URL}/transactions/${transactionHash}`;
-    const transactionResponse = await fetch(requestUrl);
-    const transactionData = await transactionResponse.json();
-    return transactionData;
+    this.abi;
+    return await this.provider.getTransaction(transactionHash);
   }
 
   async filterEvent(data: any): Promise<Event[] | undefined> {
@@ -56,20 +96,27 @@ export class DaoCrawlerService {
       events = events.filter((v: any) => {
         let topic = Buffer.from(v.topics[0], "base64").toString("utf8");
         if (this.events.includes(topic)) {
-          v.topics[0] = topic;
           return true;
         }
         return false;
       });
 
       events = events.map((item: any) => {
+        console.log(typeof item.data);
+        console.log(Buffer.from(item.data));
+        let decodedValue = new BinaryCodec().decodeTopLevel(
+          Buffer.from(item.data),
+          this.abi.getStruct("ProposeEvent")
+        );
+        console.log("\n\n ");
+        console.log(`${JSON.stringify(decodedValue)}`);
         const event: Event = {
-          address: item.address ?? "",
-          topics: item.topics ?? "",
-          txHash: data.txHash ?? "",
-          timestamp: data.timestamp ?? 12,
-          data: data.data ?? "",
-          eventName: item.topics[0], // Decoded topic is stored in eventName
+          address: item.address.value,
+          topics: item.topics,
+          txHash: data.hash,
+          timestamp: data.timestamp,
+          data: item.data,
+          eventName: item.topics[0].toString(), // Decoded topic is stored in eventName
         };
         return event;
       });
@@ -127,7 +174,7 @@ export class DaoCrawlerService {
 
       //saveToDb will be call after crawling each batch
       //TODO: checkpoint need to be saved
-      await this.saveToDb(acceptedEvents);
+      // await this.saveToDb(acceptedEvents);
     }
   }
 }

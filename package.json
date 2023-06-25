@@ -3,11 +3,12 @@
   "version": "1.0.0",
   "main": "dist/index.js",
   "engines": {
-    "node": ">=14 <18"
+    "node": ">=18"
   },
   "license": "Unlicense",
   "devDependencies": {
     "@types/chai": "^4.3.5",
+    "@types/js-yaml": "^4.0.5",
     "@types/mocha": "^10.0.1",
     "@types/node": "^20.3.1",
     "chai": "^4.3.7",
@@ -16,13 +17,22 @@
     "typescript": "^5.1.3"
   },
   "dependencies": {
+    "@multiversx/sdk-core": "^12.4.2",
+    "@multiversx/sdk-network-providers": "^1.4.0",
+    "@nestjs/config": "^3.0.0",
+    "js-yaml": "^4.1.0",
     "pg": "^8.11.0",
-    "typeorm": "^0.3.17"
+    "typeorm": "^0.3.17",
+    "yam": "^1.0.0",
+    "yaml": "^2.3.1"
   },
   "scripts": {
-    "build": "tsc",
-    "dbseed": "npm run build && node dist/tasks/db/seed.js",
-    "main": "npm run build && node dist/index.js",
-    "test": "ts-mocha test/**/*.spec.ts"
+    "build": "yarn build:commonjs && yarn build:es",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build:commonjs": "rimraf lib && tsc --target es5 --outDir lib --module commonjs --declaration",
+    "build:es": "rimraf es && tsc --target es6 --outDir es --module es6",
+    "ts": "ts-node src/",
+    "prepare": "yarn build && husky install",
+    "format": "prettier --write ."
   }
 }

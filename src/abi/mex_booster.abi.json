@@ -1,0 +1,553 @@
+{
+    "buildInfo": {
+        "rustc": {
+            "version": "1.69.0-nightly",
+            "commitHash": "7281249a19a9755e9d889ee251ec323629caadab",
+            "commitDate": "2023-02-27",
+            "channel": "Nightly",
+            "short": "rustc 1.69.0-nightly (7281249a1 2023-02-27)"
+        },
+        "contractCrate": {
+            "name": "mex_booster",
+            "version": "0.0.0"
+        },
+        "framework": {
+            "name": "multiversx-sc",
+            "version": "0.41.1"
+        }
+    },
+    "name": "MexBoosterContract",
+    "constructor": {
+        "inputs": [
+            {
+                "name": "vxd_locker_incentive",
+                "type": "BigUint"
+            },
+            {
+                "name": "protocol_fee",
+                "type": "BigUint"
+            },
+            {
+                "name": "amount_per_cliff",
+                "type": "BigUint"
+            },
+            {
+                "name": "total_vxd_supply",
+                "type": "BigUint"
+            },
+            {
+                "name": "fee_token",
+                "type": "TokenIdentifier"
+            },
+            {
+                "name": "treasury",
+                "type": "Address"
+            }
+        ],
+        "outputs": []
+    },
+    "endpoints": [
+        {
+            "name": "createPool",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "farm",
+                    "type": "Address"
+                },
+                {
+                    "name": "lp_token",
+                    "type": "TokenIdentifier"
+                },
+                {
+                    "name": "farm_token",
+                    "type": "TokenIdentifier"
+                },
+                {
+                    "name": "division_safety_constant",
+                    "type": "BigUint"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "Address"
+                }
+            ]
+        },
+        {
+            "name": "claimReward",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "pid",
+                    "type": "u8"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "getRemainingCliff",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "name": "withdraw",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "pid",
+                    "type": "u8"
+                },
+                {
+                    "name": "amount",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "total_lp_supply",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "to",
+                    "type": "Address"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "createMetastaking",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "metastaking",
+                    "type": "Address"
+                },
+                {
+                    "name": "farm_staking",
+                    "type": "Address"
+                },
+                {
+                    "name": "farm_token",
+                    "type": "TokenIdentifier"
+                },
+                {
+                    "name": "metastaking_token",
+                    "type": "TokenIdentifier"
+                },
+                {
+                    "name": "unbond_token",
+                    "type": "TokenIdentifier"
+                },
+                {
+                    "name": "division_safety_constant",
+                    "type": "BigUint"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "Address"
+                }
+            ]
+        },
+        {
+            "name": "unmetastakeFarmToken",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "mid",
+                    "type": "u8"
+                },
+                {
+                    "name": "amount",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "total_supply",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "to",
+                    "type": "Address"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "claimMetastakingReward",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "mid",
+                    "type": "u8"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "getStaker",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "Address"
+                }
+            ]
+        },
+        {
+            "name": "setStaker",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "staker",
+                    "type": "Address"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "getVotingEscrow",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "Address"
+                }
+            ]
+        },
+        {
+            "name": "setVotingEscrow",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "addr",
+                    "type": "Address"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "getBeta",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "name": "setBeta",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "beta",
+                    "type": "BigUint"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "vxdToken",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "TokenIdentifier"
+                }
+            ]
+        },
+        {
+            "name": "getVxdMinted",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "name": "setVxdToken",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "vxd",
+                    "type": "TokenIdentifier"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "getOwner",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "Address"
+                }
+            ]
+        },
+        {
+            "name": "getPoolsInfo",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "variadic<PoolInfo>",
+                    "multi_result": true
+                }
+            ]
+        },
+        {
+            "name": "getPoolAddress",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "pid",
+                    "type": "u8"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "Address"
+                }
+            ]
+        },
+        {
+            "name": "getAllStakingLp",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "variadic<TokenIdentifier>",
+                    "multi_result": true
+                }
+            ]
+        },
+        {
+            "name": "getPoolsNumber",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "u8"
+                }
+            ]
+        },
+        {
+            "name": "setRewarderTemplateAddress",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "template",
+                    "type": "Address"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "getRewarderTemplateAddress",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "Address"
+                }
+            ]
+        },
+        {
+            "name": "getFeeTokenId",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "TokenIdentifier"
+                }
+            ]
+        },
+        {
+            "name": "getPlatformTokenIncentive",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "name": "getProtocolFee",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "name": "getTreasury",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "Address"
+                }
+            ]
+        },
+        {
+            "name": "getAmountPerCliff",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "name": "getTotalCliff",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "name": "lastTimePullReward",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "u64"
+                }
+            ]
+        },
+        {
+            "name": "getK",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "name": "setK",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "k",
+                    "type": "BigUint"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "setDaoAddress",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "dao_address",
+                    "type": "Address"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "setLqmexMexLpPool",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "pool",
+                    "type": "Address"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "lqmexToken",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "TokenIdentifier"
+                }
+            ]
+        },
+        {
+            "name": "setLqmexToken",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "lqmex",
+                    "type": "TokenIdentifier"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "getAllStakingFarm",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "variadic<TokenIdentifier>",
+                    "multi_result": true
+                }
+            ]
+        },
+        {
+            "name": "getLqmexLpIncentive",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "name": "getLqmexPlatformTokenIncentive",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        }
+    ],
+    "events": [],
+    "hasCallback": false,
+    "types": {
+        "PoolInfo": {
+            "type": "struct",
+            "fields": [
+                {
+                    "name": "lp_token",
+                    "type": "TokenIdentifier"
+                },
+                {
+                    "name": "farm_token",
+                    "type": "TokenIdentifier"
+                },
+                {
+                    "name": "rewarder",
+                    "type": "Address"
+                },
+                {
+                    "name": "farm",
+                    "type": "Address"
+                }
+            ]
+        }
+    }
+}

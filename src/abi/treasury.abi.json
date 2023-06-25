@@ -1,0 +1,50 @@
+{
+    "buildInfo": {
+        "rustc": {
+            "version": "1.69.0-nightly",
+            "commitHash": "7281249a19a9755e9d889ee251ec323629caadab",
+            "commitDate": "2023-02-27",
+            "channel": "Nightly",
+            "short": "rustc 1.69.0-nightly (7281249a1 2023-02-27)"
+        },
+        "contractCrate": {
+            "name": "treasury",
+            "version": "0.0.0"
+        },
+        "framework": {
+            "name": "multiversx-sc",
+            "version": "0.41.1"
+        }
+    },
+    "name": "TreasuryContract",
+    "constructor": {
+        "inputs": [
+            {
+                "name": "admin",
+                "type": "Address"
+            }
+        ],
+        "outputs": []
+    },
+    "endpoints": [
+        {
+            "name": "withdraw",
+            "mutability": "mutable",
+            "inputs": [],
+            "outputs": []
+        },
+        {
+            "name": "admin",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "Address"
+                }
+            ]
+        }
+    ],
+    "events": [],
+    "hasCallback": false,
+    "types": {}
+}

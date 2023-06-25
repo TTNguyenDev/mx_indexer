@@ -1,0 +1,403 @@
+{
+    "buildInfo": {
+        "rustc": {
+            "version": "1.69.0-nightly",
+            "commitHash": "7281249a19a9755e9d889ee251ec323629caadab",
+            "commitDate": "2023-02-27",
+            "channel": "Nightly",
+            "short": "rustc 1.69.0-nightly (7281249a1 2023-02-27)"
+        },
+        "contractCrate": {
+            "name": "voting_escrow",
+            "version": "0.0.0"
+        },
+        "framework": {
+            "name": "multiversx-sc",
+            "version": "0.41.1"
+        }
+    },
+    "docs": [
+        "An empty contract. To be used as a template when starting a new contract from scratch."
+    ],
+    "name": "VotingEscrowContract",
+    "constructor": {
+        "inputs": [
+            {
+                "name": "locked_token",
+                "type": "TokenIdentifier"
+            },
+            {
+                "name": "operator",
+                "type": "Address"
+            },
+            {
+                "name": "treasury",
+                "type": "Address"
+            },
+            {
+                "name": "division_safety_constant",
+                "type": "BigUint"
+            }
+        ],
+        "outputs": []
+    },
+    "endpoints": [
+        {
+            "name": "checkpointEpoch",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "ts",
+                    "type": "u64"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "lock",
+            "mutability": "mutable",
+            "payableInTokens": [
+                "*"
+            ],
+            "inputs": [],
+            "outputs": []
+        },
+        {
+            "name": "extend_lock_time",
+            "mutability": "mutable",
+            "inputs": [],
+            "outputs": []
+        },
+        {
+            "name": "claim",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "user",
+                    "type": "Address"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "getClaimableReward",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "user",
+                    "type": "Address"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "name": "withdraw",
+            "mutability": "mutable",
+            "inputs": [],
+            "outputs": []
+        },
+        {
+            "name": "update_reward",
+            "mutability": "mutable",
+            "payableInTokens": [
+                "*"
+            ],
+            "inputs": [],
+            "outputs": []
+        },
+        {
+            "name": "getCurrentVeSupply",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "name": "getTotalVeSupplyAtTimestamp",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "ts",
+                    "type": "u64"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "name": "getTotalVeSupplyAtEpoch",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "epoch",
+                    "type": "u64"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "name": "getCurrentVeBalanceOf",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "addr",
+                    "type": "Address"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "name": "veBalanceAtTsOf",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "user",
+                    "type": "Address"
+                },
+                {
+                    "name": "ts",
+                    "type": "u64"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "name": "veBalanceAtEpochOf",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "addr",
+                    "type": "Address"
+                },
+                {
+                    "name": "epoch_index",
+                    "type": "u64"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "name": "getOperator",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "Address"
+                }
+            ]
+        },
+        {
+            "name": "getTreasury",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "Address"
+                }
+            ]
+        },
+        {
+            "name": "getTotalStaked",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "name": "getLockedToken",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "TokenIdentifier"
+                }
+            ]
+        },
+        {
+            "name": "getEpoch",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "variadic<Epoch>",
+                    "multi_result": true
+                }
+            ]
+        },
+        {
+            "name": "getCurrentEpochIndex",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "u32"
+                }
+            ]
+        },
+        {
+            "name": "getEpochTimestamp",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "index",
+                    "type": "u32"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "u64"
+                }
+            ]
+        },
+        {
+            "name": "getNumberOfEpoch",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "u32"
+                }
+            ]
+        },
+        {
+            "name": "getEpochReward",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "index",
+                    "type": "u32"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "name": "getDivisionSafetyConstant",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "name": "getUserCycle",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "addr",
+                    "type": "Address"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "CycleLock"
+                }
+            ]
+        },
+        {
+            "name": "getRewardToken",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "TokenIdentifier"
+                }
+            ]
+        },
+        {
+            "name": "setRewardToken",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "reward_token",
+                    "type": "TokenIdentifier"
+                }
+            ],
+            "outputs": []
+        }
+    ],
+    "events": [],
+    "hasCallback": false,
+    "types": {
+        "CycleLock": {
+            "type": "struct",
+            "fields": [
+                {
+                    "name": "amount",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "epoch_effect",
+                    "type": "u64"
+                },
+                {
+                    "name": "epoch_unlock",
+                    "type": "u64"
+                },
+                {
+                    "name": "epoch_claimed",
+                    "type": "u64"
+                },
+                {
+                    "name": "is_withdraw",
+                    "type": "bool"
+                }
+            ]
+        },
+        "Epoch": {
+            "type": "struct",
+            "fields": [
+                {
+                    "name": "supply",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "date",
+                    "type": "u64"
+                },
+                {
+                    "name": "fix_expand_lock_and_early_withdrawal",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "reward",
+                    "type": "BigUint"
+                }
+            ]
+        }
+    }
+}

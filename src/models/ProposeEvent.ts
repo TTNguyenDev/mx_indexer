@@ -17,13 +17,15 @@ export class ProposeEvent {
 
   /// Event inputs
   @Column()
-  proposal_id: number;
-
-  @Column()
-  caller: string;
-
-  @Column()
-  proposal: number; // Actutally the DAOProposal id
+  data: string;
+  // @Column()
+  // proposal_id: number;
+  //
+  // @Column()
+  // caller: string;
+  //
+  // @Column()
+  // proposal: number; // Actutally the DAOProposal id
 }
 
 @Entity()

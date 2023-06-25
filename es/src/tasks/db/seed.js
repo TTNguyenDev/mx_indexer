@@ -1,15 +1,18 @@
 // Code that is used to seed the database.
 // Usually, tasks would be at the top level directory for the project. But in this case, we need to compile this task
 // before it can be run (it's TypeScript), so I include it in a src/tasks directory.
-
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 // Must be at top
 import "reflect-metadata";
-
-import { createConnection } from "typeorm";
-
-import { typeOrmConfig } from "../../config";
-
-(async () => {
+(() => __awaiter(void 0, void 0, void 0, function* () {
     // console.log('Beginning dbseed task.');
     //
     // const conn = await createConnection(typeOrmConfig);
@@ -71,4 +74,5 @@ import { typeOrmConfig } from "../../config";
     // // Close connection
     // await conn.close();
     // console.log('\nPG connection closed.');
-})();
+}))();
+//# sourceMappingURL=seed.js.map

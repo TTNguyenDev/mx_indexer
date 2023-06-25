@@ -8,4 +8,3 @@ export interface Event {
   data?: string;
   eventName?: string;
 }
-

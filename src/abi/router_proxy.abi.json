@@ -1,0 +1,374 @@
+{
+    "buildInfo": {
+        "rustc": {
+            "version": "1.69.0-nightly",
+            "commitHash": "7281249a19a9755e9d889ee251ec323629caadab",
+            "commitDate": "2023-02-27",
+            "channel": "Nightly",
+            "short": "rustc 1.69.0-nightly (7281249a1 2023-02-27)"
+        },
+        "contractCrate": {
+            "name": "router_proxy",
+            "version": "0.0.0"
+        },
+        "framework": {
+            "name": "multiversx-sc",
+            "version": "0.41.1"
+        }
+    },
+    "name": "RouterProxyContract",
+    "constructor": {
+        "inputs": [
+            {
+                "name": "depositor",
+                "type": "Address"
+            },
+            {
+                "name": "fee_distributor",
+                "type": "Address"
+            }
+        ],
+        "outputs": []
+    },
+    "endpoints": [
+        {
+            "name": "createInitalLock",
+            "mutability": "mutable",
+            "payableInTokens": [
+                "*"
+            ],
+            "inputs": [],
+            "outputs": []
+        },
+        {
+            "name": "increaseAmount",
+            "mutability": "mutable",
+            "payableInTokens": [
+                "*"
+            ],
+            "inputs": [],
+            "outputs": []
+        },
+        {
+            "name": "withdrawLP",
+            "mutability": "mutable",
+            "payableInTokens": [
+                "*"
+            ],
+            "inputs": [
+                {
+                    "name": "farm_token",
+                    "type": "TokenIdentifier"
+                },
+                {
+                    "name": "amount",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "total_lp_supply",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "lp_token",
+                    "type": "TokenIdentifier"
+                },
+                {
+                    "name": "farm",
+                    "type": "Address"
+                },
+                {
+                    "name": "to",
+                    "type": "Address"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "deposit",
+            "mutability": "mutable",
+            "payableInTokens": [
+                "*"
+            ],
+            "inputs": [
+                {
+                    "name": "farm_token",
+                    "type": "TokenIdentifier"
+                },
+                {
+                    "name": "farm",
+                    "type": "Address"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "claimReward",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "farm_token",
+                    "type": "TokenIdentifier"
+                },
+                {
+                    "name": "farm",
+                    "type": "Address"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "Option<List<EsdtTokenPayment>>"
+                }
+            ]
+        },
+        {
+            "name": "claimFee",
+            "mutability": "mutable",
+            "inputs": [],
+            "outputs": []
+        },
+        {
+            "name": "steamFarmWeightVoteToAshswap",
+            "mutability": "mutable",
+            "inputs": [],
+            "outputs": []
+        },
+        {
+            "name": "voteForAshswapProposal",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "pid",
+                    "type": "u32"
+                },
+                {
+                    "name": "yes_pct",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "no_pct",
+                    "type": "BigUint"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "getAshEscrow",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "Address"
+                }
+            ]
+        },
+        {
+            "name": "setAshEscrow",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "ash_escrow",
+                    "type": "Address"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "ashToken",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "TokenIdentifier"
+                }
+            ]
+        },
+        {
+            "name": "setAshToken",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "ash_token",
+                    "type": "TokenIdentifier"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "ashswapFarmController",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "Address"
+                }
+            ]
+        },
+        {
+            "name": "setAshswapFarmController",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "farm_controller",
+                    "type": "Address"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "getDepositor",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "Address"
+                }
+            ]
+        },
+        {
+            "name": "setDepositor",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "depositor",
+                    "type": "Address"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "getOwner",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "Address"
+                }
+            ]
+        },
+        {
+            "name": "unlockTime",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "u64"
+                }
+            ]
+        },
+        {
+            "name": "setFeeDistributorAshswap",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "distributor",
+                    "type": "Address"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "getLqashStakingAddress",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "Address"
+                }
+            ]
+        },
+        {
+            "name": "setLqashStakingAddress",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "lqash_staking_address",
+                    "type": "Address"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "setFeeToken",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "fee_token",
+                    "type": "TokenIdentifier"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "setDaoAddress",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "dao",
+                    "type": "Address"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "getAshswapDaoAddress",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "Address"
+                }
+            ]
+        },
+        {
+            "name": "getFarmTokenNonce",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "farm_token",
+                    "type": "TokenIdentifier"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "Option<u64>"
+                }
+            ]
+        },
+        {
+            "name": "getFarmTokenBalance",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "farm_token",
+                    "type": "TokenIdentifier"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        }
+    ],
+    "events": [],
+    "hasCallback": false,
+    "types": {
+        "EsdtTokenPayment": {
+            "type": "struct",
+            "fields": [
+                {
+                    "name": "token_identifier",
+                    "type": "TokenIdentifier"
+                },
+                {
+                    "name": "token_nonce",
+                    "type": "u64"
+                },
+                {
+                    "name": "amount",
+                    "type": "BigUint"
+                }
+            ]
+        }
+    }
+}
