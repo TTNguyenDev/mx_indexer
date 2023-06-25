@@ -1,37 +1,8 @@
-# typeorm-postgres-example
+### TODO:
 
-Demonstrates using TypeORM with PostgreSQL in a Node app. It does not demonstrate creating the web app itself, except for a comment in the ```src/index.ts``` file showing where the app's "main" code would go. This example's purpose is to show how to set up a declarative development environment where team members (or you, in the future) would not need to run manual SQL commands for the local development database to match. Instead, the ```dbseed``` task (implemented as a TypeScript file compiled and executed by the ```build``` NPM task), takes care of ensuring the running database has the required SQL schema and that it is populated with test data.
-
-## System Prerequisites
-
-* Node 14.x+
-* Docker and docker-compose
-
-## Models
-
-There are three models in this example:
-
-* Doctor
-* Patient
-* Appointment (junction model between Doctor and Patient)
-
-## First run
-
-1. Run `npm install` to install local dependencies.
-1. Run `docker-compose up -d` to create and start the required Docker containers for the PostgreSQL database.
-1. Run `npm run build` to compile the code, including tasks.
-1. Run `npm run dbseed` to insert the seed data into the running PostgreSQL database. Note that since the task is coded in TypeScript, it must be compiled first. Therefore, this npm script runs the **build** npm script first before running the **dbseed** task.
-
-## Next runs
-
-These steps assume you have the docker-compose stack running.
-
-### After changing source code
-
-1. Run `npm run build` to compile the source code.
-1. Run `npm start` to start the app.
-
-### After changing seed data
-
-1. Run `npm run dbseed` to compile the source code and insert the seed data into the running PostgreSQL database.
-1. Run `npm start` to start the app.
+- Scan ABIs, convert event to Postgres Entities
+  - Postgres table name will be "AshDepositor.EventA"
+  - If Event properties contains a custom model, we need to create another table, and link the id
+- Get from 0 to current block https://devnet-api.multiversx.com/accounts/erd1qqqqqqqqqqqqqpgqv49mkah22xp5eypz78jc3t56yyww59tgjpqsu5lhht/transfers?from=0&size=1&order=asc
+  - For each batch (50), we count the return length array, update to db
+  - For each batch (50), we update this batch into db

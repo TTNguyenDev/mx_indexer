@@ -1,13 +1,8 @@
 // Config that is common to more than one part of the app.
 
-import {
-    PostgresConnectionOptions
-} from 'typeorm/driver/postgres/PostgresConnectionOptions';
-
-import Appointment from './models/Appointment';
-import Doctor from './models/Doctor';
-import Patient from './models/Patient';
-import ScEvent from './models/ScEvent';
+import { PostgresConnectionOptions } from "typeorm/driver/postgres/PostgresConnectionOptions";
+import { ProposeEvent } from "./models/ProposeEvent";
+import { VoteEvent } from "./models/VoteEvent";
 
 const typeOrmConfig: PostgresConnectionOptions = {
     type: "postgres",
@@ -18,12 +13,7 @@ const typeOrmConfig: PostgresConnectionOptions = {
     database: "typeormtest",
     synchronize: true,
     logging: false,
-    entities: [
-        Appointment,
-        Doctor,
-        Patient,
-        ScEvent
-    ]
+    entities: [ProposeEvent, VoteEvent],
 };
 
 export { typeOrmConfig };
