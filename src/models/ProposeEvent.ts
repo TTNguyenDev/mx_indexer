@@ -41,6 +41,12 @@ export class DAOAction {
   })
   function_name: Buffer | null;
 
+  @Column({
+    type: 'bytea',
+    nullable: true
+  })
+  arguments: ArrayBuffer | null;
+
   // @Column()
   // arguments: ArrayBuffer;
 }

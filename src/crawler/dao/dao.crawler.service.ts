@@ -147,6 +147,7 @@ export class DaoCrawlerService {
           let daoAction = new DAOAction();
           daoAction.dest_address = decodedValue.valueOf().action.dest_address.bech32();
           daoAction.function_name = decodedValue.valueOf().action.function_name.valueOf();
+          daoAction.arguments = decodedValue.valueOf().action.arguments.valueOf();
           let daoActionRep = this.dataSource.getRepository(DAOAction);
           daoAction = await daoActionRep.save(daoAction);
           daoProposal.action = daoAction.id;
