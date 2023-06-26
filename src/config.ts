@@ -1,7 +1,7 @@
 // Config that is common to more than one part of the app.
 
 import { PostgresConnectionOptions } from "typeorm/driver/postgres/PostgresConnectionOptions";
-import { ProposeEvent } from "./models/ProposeEvent";
+import { DAOAction, DAOConfig, DAOProposal, ProposeEvent } from "./models/ProposeEvent";
 import { VoteEvent } from "./models/VoteEvent";
 
 const typeOrmConfig: PostgresConnectionOptions = {
@@ -13,7 +13,7 @@ const typeOrmConfig: PostgresConnectionOptions = {
     database: "typeormtest",
     synchronize: true,
     logging: false,
-    entities: [ProposeEvent, VoteEvent],
+    entities: [ProposeEvent, VoteEvent, DAOProposal, DAOAction, DAOConfig],
 };
 
 export { typeOrmConfig };

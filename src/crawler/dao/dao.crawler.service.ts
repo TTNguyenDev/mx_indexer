@@ -1,6 +1,7 @@
 import fetch from "node-fetch";
 import { Event } from "./../crawler.entity";
 import { DataSource, Repository } from "typeorm";
+import * as toHex from 'to-hex';
 
 // import { ApiConfigService } from "src/common/api-config/api.config.service";
 import {
@@ -12,10 +13,12 @@ import {
   BigUIntType,
   CustomType,
   StructType,
+  U32Type,
+  AddressType,
 } from "@multiversx/sdk-core/out";
 import { ApiNetworkProvider } from "@multiversx/sdk-network-providers/out";
 import * as fs from "fs";
-import { DAOProposal, ProposeEvent } from "./../../models/ProposeEvent";
+import { DAOAction, DAOConfig, DAOProposal, ProposeEvent } from "./../../models/ProposeEvent";
 import { VoteEvent } from "./../../models/VoteEvent";
 
 // Defaults
@@ -84,9 +87,10 @@ export class DaoCrawlerService {
       .filter((v) => v !== undefined);
   }
 
-  async getTransactionDetail(transactionHash: string): Promise<any> {
-    this.abi;
-    return await this.provider.getTransaction(transactionHash);
+  async getTransactionDetail(hash: string): Promise<any> {
+    const req = `${BASE_URL}/transactions/${hash}`;
+    const txResponse = await fetch(req);
+    return ((await txResponse.json()) as any[])
   }
 
   async filterEvent(data: any): Promise<Event[] | undefined> {
@@ -102,22 +106,16 @@ export class DaoCrawlerService {
       });
 
       events = events.map((item: any) => {
-        console.log(typeof item.data);
-        console.log(Buffer.from(item.data));
-        let decodedValue = new BinaryCodec().decodeTopLevel(
-          Buffer.from(item.data),
-          this.abi.getStruct("ProposeEvent")
-        );
-        console.log("\n\n ");
-        console.log(`${JSON.stringify(decodedValue)}`);
         const event: Event = {
-          address: item.address.value,
+          address: item.address,
           topics: item.topics,
-          txHash: data.hash,
+          txHash: data.txHash,
           timestamp: data.timestamp,
-          data: item.data,
-          eventName: item.topics[0].toString(), // Decoded topic is stored in eventName
+          data: Buffer.from(item.data, "base64"),
+          eventName: atob(item.topics[0].toString()), // Decoded topic is stored in eventName
         };
+
+        // console.log(event);
         return event;
       });
 
@@ -138,6 +136,46 @@ export class DaoCrawlerService {
           event.contractAddress = e.address;
 
           //TODO: Parse datas and map to ProposeEvent
+          let u32type = new BinaryCodec().decodeTopLevel(Buffer.from(e.topics[1], "base64"), new U32Type());
+          let address = new BinaryCodec().decodeTopLevel(Buffer.from(e.topics[2], "base64"), new AddressType());
+          event.proposal_id = u32type.valueOf().toFixed(0);
+          event.caller = address.valueOf().bech32();
+
+          let daoProposal = new DAOProposal();
+          let decodedValue = new BinaryCodec().decodeTopLevel(e.data, this.abi.getStruct("DAOProposal"));
+
+          let daoAction = new DAOAction();
+          daoAction.dest_address = decodedValue.valueOf().action.dest_address.bech32();
+          daoAction.function_name = decodedValue.valueOf().action.function_name.valueOf();
+          let daoActionRep = this.dataSource.getRepository(DAOAction);
+          daoAction = await daoActionRep.save(daoAction);
+          daoProposal.action = daoAction.id;
+
+          let daoConfig = new DAOConfig();
+          daoConfig.min_power_for_propose = decodedValue.valueOf().config.min_power_for_propose.valueOf();
+          daoConfig.min_time_for_propose = decodedValue.valueOf().config.min_time_for_propose.valueOf();
+
+          daoConfig.min_support_pct = decodedValue.valueOf().config.min_support_pct.valueOf();
+          daoConfig.min_quorum_pct = decodedValue.valueOf().config.min_quorum_pct.valueOf();
+          daoConfig.voting_time_limit = decodedValue.valueOf().config.voting_time_limit.valueOf();
+          daoConfig.queue_time_limit = decodedValue.valueOf().config.queue_time_limit.valueOf();
+          daoConfig.execute_time_limit = decodedValue.valueOf().config.execute_time_limit.valueOf();
+          let daoConfigRep = this.dataSource.getRepository(DAOConfig);
+          daoConfig = await daoConfigRep.save(daoConfig);
+          daoProposal.config = daoConfig.id;
+
+          daoProposal.proposer = decodedValue.valueOf().proposer.bech32();
+          daoProposal.metadata = decodedValue.valueOf().metadata.valueOf();
+          daoProposal.created_at = decodedValue.valueOf().created_at.valueOf();
+          daoProposal.total_supply = decodedValue.valueOf().total_supply.valueOf();
+          daoProposal.yes_vote = decodedValue.valueOf().yes_vote.valueOf();
+          daoProposal.no_vote = decodedValue.valueOf().no_vote.valueOf();
+          daoProposal.executed_at = decodedValue.valueOf().executed_at.valueOf();
+          daoProposal.executed_by = decodedValue.valueOf().executed_by.bech32();
+          let daoProposalRep = this.dataSource.getRepository(DAOProposal);
+          daoProposal = await daoProposalRep.save(daoProposal);
+
+          event.proposal = daoProposal.id;
           event = await proposeEvent.save(event);
           console.log(`\nEvent saved: ${JSON.stringify(event)}`);
           break;
@@ -174,7 +212,16 @@ export class DaoCrawlerService {
 
       //saveToDb will be call after crawling each batch
       //TODO: checkpoint need to be saved
-      // await this.saveToDb(acceptedEvents);
+      await this.saveToDb(acceptedEvents);
     }
   }
+}
+
+function base64ToInt(base64String: string): number {
+  const decodedString = Buffer.from(base64String, 'base64').toString('utf-8');
+  const result = parseInt(decodedString, 10);
+  if (isNaN(result)) {
+    throw new Error('Decoded base64 string could not be converted to an integer');
+  }
+  return result;
 }

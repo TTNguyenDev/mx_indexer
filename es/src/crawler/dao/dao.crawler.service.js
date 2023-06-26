@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 import fetch from "node-fetch";
 // import { ApiConfigService } from "src/common/api-config/api.config.service";
-import { AbiRegistry, Address, SmartContract, } from "@multiversx/sdk-core/out";
+import { AbiRegistry, Address, SmartContract, BinaryCodec, } from "@multiversx/sdk-core/out";
 import { ApiNetworkProvider } from "@multiversx/sdk-network-providers/out";
 import * as fs from "fs";
 import { ProposeEvent } from "./../../models/ProposeEvent";
@@ -20,11 +20,12 @@ export class DaoCrawlerService {
     constructor(
     // private readonly apiConfigService: ApiConfigService,
     address, events, dataSource) {
-        const abiPath = "../../abi/dao.abi.json";
+        const abiPath = "./src/abi/dao.abi.json";
         const contractAddress = "erd1qqqqqqqqqqqqqpgqw9623l42csqht9apczzg7xr0x3nhgxt0jpqsyupewg";
         const provider = "https://devnet-api.multiversx.com";
         const abi = this.getAbiRegistry(abiPath);
         if (abi != undefined) {
+            this.abi = abi;
             this.sm = new SmartContract({
                 address: new Address(contractAddress),
                 abi: this.getAbiRegistry(abiPath),
@@ -68,9 +69,7 @@ export class DaoCrawlerService {
     }
     getTransactionDetail(transactionHash) {
         return __awaiter(this, void 0, void 0, function* () {
-            // const requestUrl = `${BASE_URL}/transactions/${transactionHash}`;
-            // const transactionResponse = await fetch(requestUrl);
-            // const transactionData = await transactionResponse.json();
+            this.abi;
             return yield this.provider.getTransaction(transactionHash);
         });
     }
@@ -81,20 +80,23 @@ export class DaoCrawlerService {
                 events = events.filter((v) => {
                     let topic = Buffer.from(v.topics[0], "base64").toString("utf8");
                     if (this.events.includes(topic)) {
-                        v.topics[0] = topic;
                         return true;
                     }
                     return false;
                 });
                 events = events.map((item) => {
-                    var _a, _b, _c, _d, _e;
+                    console.log(typeof item.data);
+                    console.log(Buffer.from(item.data));
+                    let decodedValue = new BinaryCodec().decodeTopLevel(Buffer.from(item.data), this.abi.getStruct("ProposeEvent"));
+                    console.log("\n\n ");
+                    console.log(`${JSON.stringify(decodedValue)}`);
                     const event = {
-                        address: (_a = item.address) !== null && _a !== void 0 ? _a : "",
-                        topics: (_b = item.topics) !== null && _b !== void 0 ? _b : "",
-                        txHash: (_c = data.txHash) !== null && _c !== void 0 ? _c : "",
-                        timestamp: (_d = data.timestamp) !== null && _d !== void 0 ? _d : 12,
-                        data: (_e = data.data) !== null && _e !== void 0 ? _e : "",
-                        eventName: item.topics[0], // Decoded topic is stored in eventName
+                        address: item.address.value,
+                        topics: item.topics,
+                        txHash: data.hash,
+                        timestamp: data.timestamp,
+                        data: item.data,
+                        eventName: item.topics[0].toString(), // Decoded topic is stored in eventName
                     };
                     return event;
                 });
@@ -149,7 +151,7 @@ export class DaoCrawlerService {
                 }
                 //saveToDb will be call after crawling each batch
                 //TODO: checkpoint need to be saved
-                yield this.saveToDb(acceptedEvents);
+                // await this.saveToDb(acceptedEvents);
             }
         });
     }

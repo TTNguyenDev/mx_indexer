@@ -5,6 +5,6 @@ export interface Event {
   timestamp?: number;
   address?: string;
   topics?: string[];
-  data?: string;
+  data?: any;
   eventName?: string;
 }

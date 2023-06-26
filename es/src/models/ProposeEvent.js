@@ -28,16 +28,8 @@ __decorate([
 ], ProposeEvent.prototype, "contractAddress", void 0);
 __decorate([
     Column(),
-    __metadata("design:type", Number)
-], ProposeEvent.prototype, "proposal_id", void 0);
-__decorate([
-    Column(),
     __metadata("design:type", String)
-], ProposeEvent.prototype, "caller", void 0);
-__decorate([
-    Column(),
-    __metadata("design:type", Number)
-], ProposeEvent.prototype, "proposal", void 0);
+], ProposeEvent.prototype, "data", void 0);
 ProposeEvent = __decorate([
     Entity()
 ], ProposeEvent);

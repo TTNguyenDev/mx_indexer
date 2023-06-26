@@ -7,6 +7,7 @@ export declare class DaoCrawlerService {
     dataSource: DataSource;
     provider: any;
     sm: any;
+    abi: AbiRegistry;
     constructor(address: string, events: string[], dataSource: DataSource);
     getAbiRegistry(path: string): AbiRegistry | undefined;
     txCount(): Promise<number>;

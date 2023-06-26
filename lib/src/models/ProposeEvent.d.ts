@@ -4,9 +4,7 @@ export declare class ProposeEvent {
     txHash: string;
     timestamp: number;
     contractAddress: string;
-    proposal_id: number;
-    caller: string;
-    proposal: number;
+    data: string;
 }
 export declare class DAOProposal {
     id: number;

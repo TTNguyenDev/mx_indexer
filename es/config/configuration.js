@@ -8,7 +8,6 @@ export function readConfig() {
     Object.entries(env).map(([k, v]) => {
         fileStr = fileStr.replace(new RegExp(`\\$\\{${k}\\}`, "gm"), v || "");
     });
-    console.log(`Config ${JSON.stringify(yaml.load(fileStr))}`);
     return yaml.load(fileStr);
 }
 //# sourceMappingURL=configuration.js.map
