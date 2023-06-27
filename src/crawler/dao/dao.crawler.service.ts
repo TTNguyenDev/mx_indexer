@@ -12,12 +12,15 @@ import {
 import * as fs from "fs";
 import { ProposeEvent, VoteEvent } from "./dao.crawler.entity";
 import { Config } from "src/common/config";
+import { CrawledTransactions } from "../entity";
+import { json } from "stream/consumers";
 
 export class DaoCrawlerService {
   address: string;
   events: string[];
   dataSource: DataSource;
   abi: AbiRegistry;
+  config: Config;
 
   constructor(
     config: Config,
@@ -34,6 +37,7 @@ export class DaoCrawlerService {
     this.address = address;
     this.events = events;
     this.dataSource = dataSource;
+    this.config = config;
   }
 
   getAbiRegistry(path: string): AbiRegistry | undefined {
@@ -123,23 +127,74 @@ export class DaoCrawlerService {
     }
   }
 
+  async getCheckpoint(): Promise<number> {
+    let repository = this.dataSource.getRepository(CrawledTransactions);
+    const entity = await repository.findOne({ where: { abiName: "dao" } });
+
+    if (entity) {
+      // The entity with the specified name was found
+      console.log(entity);
+      return entity.count;
+    } else {
+      // No entity with the specified name was found
+      console.log('No entity found.');
+      return 0;
+    }
+
+  }
+  async saveCheckpoint(value: number) {
+    let repository = this.dataSource.getRepository(CrawledTransactions);
+    let entity = await repository.findOne({ where: { abiName: "dao" } });
+
+    if (entity) {
+      // The entity with the specified name was found
+      console.log(entity);
+      entity.count += value;
+      await repository.save(entity);
+    } else {
+      // No entity with the specified name was found
+      console.log('No entity found.');
+      let newEntity = new CrawledTransactions();
+      newEntity.abiName = 'dao';
+      newEntity.count = value;
+      await repository.save(newEntity);
+    }
+    console.log("New checkpoint saved");
+  }
+
   async run() {
-    const txCount = await mxApis.txCount(this.address);
+    while (true) {
+      const txCount = await mxApis.txCount(this.address);
+      let begin = await this.getCheckpoint();
 
-    const size = 1000;
-
-    for (let from = 0; from < txCount; from += size) {
-      const txHashes = await mxApis.TxHashes(this.address, from, size);
-      let acceptedEvents: mxApis.Event[] = [];
-      for (const hash of txHashes) {
-        let txDetails = await mxApis.getTransactionDetail(hash);
-        const event = await mxApis.filterEvent(this.events, txDetails);
-        acceptedEvents = [...acceptedEvents, ...event];
+      console.log(txCount);
+      if (txCount <= begin + 1 /*Because checkpoint starts from zero*/) {
+        console.log("All txs were crawled");
+        await sleep(3000);
+        continue;
       }
+      const size = this.config.getBatchSize();
 
-      //saveToDb will be call after crawling each batch
-      //TODO: checkpoint need to be saved
-      await this.saveToDb(acceptedEvents);
+      for (let from = begin; from < txCount; from += size) {
+        const txHashes = await mxApis.TxHashes(this.address, from, size);
+        let acceptedEvents: mxApis.Event[] = [];
+        for (const hash of txHashes) {
+          let txDetails = await mxApis.getTransactionDetail(hash);
+          const event = await mxApis.filterEvent(this.events, txDetails);
+          acceptedEvents = [...acceptedEvents, ...event];
+        }
+
+        //saveToDb will be call after crawling each batch
+        //TODO: checkpoint need to be saved
+        await this.saveToDb(acceptedEvents);
+        await this.saveCheckpoint(txHashes.length);
+      }
     }
   }
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
 }

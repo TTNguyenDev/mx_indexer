@@ -36,6 +36,14 @@ export class Config {
     return contractAddress;
   }
 
+  getBatchSize(): number {
+    const batchSize = this.data['batchSize'];
+    if (!batchSize) {
+      throw new Error(`No batchsize config present`);
+    }
+    return batchSize;
+  }
+
   // getContractAddresses(): Record<string, any> {
   //   const contractAddresses =
   //     this.configService.get<Record<string, any>>(`wallet`);

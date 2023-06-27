@@ -67,6 +67,7 @@ abi:
     - "./src/abi/treasury.abi.json"
   votingEscrow:
     - "./src/abi/voting_escrow.abi.json"
+batchSize: 1
 database:
   host: "localhost"
   port: 3306

@@ -2,6 +2,7 @@
 
 import { PostgresConnectionOptions } from "typeorm/driver/postgres/PostgresConnectionOptions";
 import { ProposeEvent, VoteEvent } from "./crawler/dao/dao.crawler.entity";
+import { CrawledTransactions } from "./crawler/entity";
 
 const typeOrmConfig: PostgresConnectionOptions = {
     type: "postgres",
@@ -12,7 +13,7 @@ const typeOrmConfig: PostgresConnectionOptions = {
     database: "typeormtest",
     synchronize: true,
     logging: false,
-    entities: [ProposeEvent, VoteEvent],
+    entities: [ProposeEvent, VoteEvent, CrawledTransactions],
 };
 
 export { typeOrmConfig };
