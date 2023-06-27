@@ -1,55 +1,33 @@
 import fetch from "node-fetch";
-import { Event } from "./../crawler.entity";
-import { DataSource, Repository } from "typeorm";
-import * as toHex from 'to-hex';
+import { DataSource } from "typeorm";
+import * as mxApis from './../../common/mx-apis/';
 
-// import { ApiConfigService } from "src/common/api-config/api.config.service";
 import {
   AbiRegistry,
-  Address,
-  SmartContract,
-  ResultsParser,
   BinaryCodec,
-  BigUIntType,
-  CustomType,
-  StructType,
   U32Type,
   AddressType,
 } from "@multiversx/sdk-core/out";
-import { ApiNetworkProvider } from "@multiversx/sdk-network-providers/out";
 import * as fs from "fs";
-import { DAOAction, DAOConfig, DAOProposal, ProposeEvent } from "./../../models/ProposeEvent";
-import { VoteEvent } from "./../../models/VoteEvent";
-
-// Defaults
-const BASE_URL = "https://devnet-api.multiversx.com";
+import { ProposeEvent, VoteEvent } from "./dao.crawler.entity";
+import { Config } from "src/common/config";
 
 export class DaoCrawlerService {
   address: string;
   events: string[];
   dataSource: DataSource;
-  provider: any;
-  sm: any;
   abi: AbiRegistry;
 
   constructor(
-    // private readonly apiConfigService: ApiConfigService,
+    config: Config,
     address: string,
     events: string[],
-    dataSource: DataSource
+    dataSource: DataSource,
   ) {
-    const abiPath = "./src/abi/dao.abi.json";
-    const contractAddress =
-      "erd1qqqqqqqqqqqqqpgqw9623l42csqht9apczzg7xr0x3nhgxt0jpqsyupewg";
-    const provider = "https://devnet-api.multiversx.com";
+    const abiPath = config.getContractAbiPath('dao');
     const abi = this.getAbiRegistry(abiPath);
     if (abi != undefined) {
       this.abi = abi;
-      this.sm = new SmartContract({
-        address: new Address(contractAddress),
-        abi: this.getAbiRegistry(abiPath) as AbiRegistry,
-      });
-      this.provider = new ApiNetworkProvider(provider);
     }
 
     this.address = address;
@@ -62,70 +40,8 @@ export class DaoCrawlerService {
     return AbiRegistry.create(JSON.parse(data));
   }
 
-  async txCount(): Promise<number> {
-    const req = await fetch(
-      `${BASE_URL}/accounts/${this.address}/transfers/count`
-    );
-    return await req.json();
-  }
 
-  async TxHashes(from: number, size: number): Promise<string[]> {
-    const req = `${BASE_URL}/accounts/${this.address}/transfers?from=${from}&size=${size}`;
-    const txResponse = await fetch(req);
-    return ((await txResponse.json()) as any[])
-      .map((tx: any) => {
-        if (tx.status == "success") {
-          if (tx.type == "SmartContractResult") {
-            return tx.originalTxHash;
-          } else {
-            return tx.txHash;
-          }
-        } else {
-          return undefined;
-        }
-      })
-      .filter((v) => v !== undefined);
-  }
-
-  async getTransactionDetail(hash: string): Promise<any> {
-    const req = `${BASE_URL}/transactions/${hash}`;
-    const txResponse = await fetch(req);
-    return ((await txResponse.json()) as any[])
-  }
-
-  async filterEvent(data: any): Promise<Event[] | undefined> {
-    if (data.logs.events != undefined) {
-      let events = data.logs.events;
-
-      events = events.filter((v: any) => {
-        let topic = Buffer.from(v.topics[0], "base64").toString("utf8");
-        if (this.events.includes(topic)) {
-          return true;
-        }
-        return false;
-      });
-
-      events = events.map((item: any) => {
-        const event: Event = {
-          address: item.address,
-          topics: item.topics,
-          txHash: data.txHash,
-          timestamp: data.timestamp,
-          data: Buffer.from(item.data, "base64"),
-          eventName: atob(item.topics[0].toString()), // Decoded topic is stored in eventName
-        };
-
-        // console.log(event);
-        return event;
-      });
-
-      return events;
-    } else {
-      return undefined;
-    }
-  }
-
-  async saveToDb(events: Event[]) {
+  async saveToDb(events: mxApis.Event[]) {
     for (const e of events) {
       switch (e.eventName) {
         case this.events[0]: {
@@ -136,49 +52,68 @@ export class DaoCrawlerService {
           event.contractAddress = e.address;
 
           //TODO: Parse datas and map to ProposeEvent
-          let u32type = new BinaryCodec().decodeTopLevel(Buffer.from(e.topics[1], "base64"), new U32Type());
-          let address = new BinaryCodec().decodeTopLevel(Buffer.from(e.topics[2], "base64"), new AddressType());
+          let u32type = new BinaryCodec().decodeTopLevel(
+            Buffer.from(e.topics[1], "base64"),
+            new U32Type()
+          );
+
+          let address = new BinaryCodec().decodeTopLevel(
+            Buffer.from(e.topics[2], "base64"),
+            new AddressType()
+          );
           event.proposal_id = u32type.valueOf().toFixed(0);
           event.caller = address.valueOf().bech32();
 
-          let daoProposal = new DAOProposal();
-          let decodedValue = new BinaryCodec().decodeTopLevel(e.data, this.abi.getStruct("DAOProposal"));
+          let decodedValue = new BinaryCodec().decodeTopLevel(
+            e.data,
+            this.abi.getStruct("DAOProposal")
+          );
 
-          let daoAction = new DAOAction();
-          daoAction.dest_address = decodedValue.valueOf().action.dest_address.bech32();
-          daoAction.function_name = decodedValue.valueOf().action.function_name.valueOf();
-          daoAction.arguments = decodedValue.valueOf().action.arguments.valueOf();
-          let daoActionRep = this.dataSource.getRepository(DAOAction);
-          daoAction = await daoActionRep.save(daoAction);
-          daoProposal.action = daoAction.id;
+          //Proposal action
+          event.proposal__action__dest_address = decodedValue.valueOf().action.dest_address.bech32();
+          event.proposal__action__function_name = decodedValue
+            .valueOf()
+            .action.function_name.valueOf().toString('hex');
+          event.proposal__action__arguments = decodedValue
+            .valueOf()
+            .action.arguments.valueOf().map((v: Buffer) => v.toString('hex'));
 
-          let daoConfig = new DAOConfig();
-          daoConfig.min_power_for_propose = decodedValue.valueOf().config.min_power_for_propose.valueOf();
-          daoConfig.min_time_for_propose = decodedValue.valueOf().config.min_time_for_propose.valueOf();
+          event.proposal__config__min_power_for_propose = decodedValue
+            .valueOf()
+            .config.min_power_for_propose.valueOf();
+          event.proposal__config__min_time_for_propose = decodedValue
+            .valueOf()
+            .config.min_time_for_propose.valueOf();
 
-          daoConfig.min_support_pct = decodedValue.valueOf().config.min_support_pct.valueOf();
-          daoConfig.min_quorum_pct = decodedValue.valueOf().config.min_quorum_pct.valueOf();
-          daoConfig.voting_time_limit = decodedValue.valueOf().config.voting_time_limit.valueOf();
-          daoConfig.queue_time_limit = decodedValue.valueOf().config.queue_time_limit.valueOf();
-          daoConfig.execute_time_limit = decodedValue.valueOf().config.execute_time_limit.valueOf();
-          let daoConfigRep = this.dataSource.getRepository(DAOConfig);
-          daoConfig = await daoConfigRep.save(daoConfig);
-          daoProposal.config = daoConfig.id;
+          event.proposal__config__min_support_pct = decodedValue
+            .valueOf()
+            .config.min_support_pct.valueOf();
+          event.proposal__config__min_quorum_pct = decodedValue.valueOf().config.min_quorum_pct.valueOf();
+          event.proposal__config__voting_time_limit = decodedValue
+            .valueOf()
+            .config.voting_time_limit.valueOf();
+          event.proposal__config__queue_time_limit = decodedValue
+            .valueOf()
+            .config.queue_time_limit.valueOf();
+          event.proposal__config__execute_time_limit = decodedValue
+            .valueOf()
+            .config.execute_time_limit.valueOf();
 
-          daoProposal.proposer = decodedValue.valueOf().proposer.bech32();
-          daoProposal.metadata = decodedValue.valueOf().metadata.valueOf();
-          daoProposal.created_at = decodedValue.valueOf().created_at.valueOf();
-          daoProposal.total_supply = decodedValue.valueOf().total_supply.valueOf();
-          daoProposal.yes_vote = decodedValue.valueOf().yes_vote.valueOf();
-          daoProposal.no_vote = decodedValue.valueOf().no_vote.valueOf();
-          daoProposal.executed_at = decodedValue.valueOf().executed_at.valueOf();
-          daoProposal.executed_by = decodedValue.valueOf().executed_by.bech32();
-          let daoProposalRep = this.dataSource.getRepository(DAOProposal);
-          daoProposal = await daoProposalRep.save(daoProposal);
+          event.proposal__proposer = decodedValue.valueOf().proposer.bech32();
+          event.proposal__metadata = decodedValue.valueOf().metadata.valueOf().toString('hex');
+          event.proposal__created_at = decodedValue.valueOf().created_at.valueOf();
+          event.proposal__total_supply = decodedValue
+            .valueOf()
+            .total_supply.valueOf();
+          event.proposal__yes_vote = decodedValue.valueOf().yes_vote.valueOf();
+          event.proposal__no_vote = decodedValue.valueOf().no_vote.valueOf();
+          event.proposal__executed_at = decodedValue
+            .valueOf()
+            .executed_at.valueOf();
+          event.proposal__executed_by = decodedValue.valueOf().executed_by.bech32();
 
-          event.proposal = daoProposal.id;
           event = await proposeEvent.save(event);
-          console.log(`\nEvent saved: ${JSON.stringify(event)}`);
+          console.log(`\nPropose Event saved: ${JSON.stringify(event)}`);
           break;
         }
         case this.events[1]: {
@@ -189,8 +124,26 @@ export class DaoCrawlerService {
           event.contractAddress = e.address;
 
           //TODO: Parse datas and map to ProposeEvent
+          let u32type = new BinaryCodec().decodeTopLevel(
+            Buffer.from(e.topics[1], "base64"),
+            new U32Type()
+          );
+
+          let address = new BinaryCodec().decodeTopLevel(
+            Buffer.from(e.topics[2], "base64"),
+            new AddressType()
+          );
+          event.proposal_id = u32type.valueOf().toFixed(0);
+          event.caller = address.valueOf().bech32();
+
+          let decodedValue = new BinaryCodec().decodeTopLevel(
+            e.data,
+            this.abi.getStruct("Voting")
+          );
+          event.voting__yes_vote = decodedValue.valueOf().voting.yes_vote.valueOf();
+          event.voting__no_vote = decodedValue.valueOf().voting.no_vote.valueOf();
           event = await voteEvent.save(event);
-          console.log(`\nEvent saved: ${JSON.stringify(event)}`);
+          console.log(`\nVote Event saved: ${JSON.stringify(event)}`);
           break;
         }
       }
@@ -198,16 +151,16 @@ export class DaoCrawlerService {
   }
 
   async run() {
-    const txCount = await this.txCount();
+    const txCount = await mxApis.txCount(this.address);
 
     const size = 1000;
 
     for (let from = 0; from < txCount; from += size) {
-      const txHashes = await this.TxHashes(from, size);
-      let acceptedEvents: Event[] = [];
+      const txHashes = await mxApis.TxHashes(this.address, from, size);
+      let acceptedEvents: mxApis.Event[] = [];
       for (const hash of txHashes) {
-        let txDetails = await this.getTransactionDetail(hash);
-        const event = await this.filterEvent(txDetails);
+        let txDetails = await mxApis.getTransactionDetail(hash);
+        const event = await mxApis.filterEvent(this.events, txDetails);
         acceptedEvents = [...acceptedEvents, ...event];
       }
 
@@ -218,11 +171,3 @@ export class DaoCrawlerService {
   }
 }
 
-function base64ToInt(base64String: string): number {
-  const decodedString = Buffer.from(base64String, 'base64').toString('utf-8');
-  const result = parseInt(decodedString, 10);
-  if (isNaN(result)) {
-    throw new Error('Decoded base64 string could not be converted to an integer');
-  }
-  return result;
-}
