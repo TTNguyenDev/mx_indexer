@@ -18,7 +18,7 @@
   },
   "dependencies": {
     "@multiversx/sdk-core": "^12.4.2",
-    "@multiversx/sdk-network-providers": "^1.4.0",
+    "@multiversx/sdk-network-providers": "^1.5.0",
     "@nestjs/config": "^3.0.0",
     "js-yaml": "^4.1.0",
     "pg": "^8.11.0",
