@@ -9,7 +9,7 @@ export class ProposeEvent {
   @Column()
   txHash: string;
 
-  @Column()
+  @Column({ nullable: true })
   timestamp: number;
 
   @Column()
@@ -22,7 +22,7 @@ export class ProposeEvent {
   @Column()
   caller: string;
 
-  /// Proposal 
+  /// Proposal
   @Column()
   proposal__proposer: string;
 
@@ -37,15 +37,15 @@ export class ProposeEvent {
   proposal__action__function_name: string;
 
   @Column({
-    type: 'text',
+    type: "text",
     array: true,
     nullable: true,
-    default: '{}',
+    default: "{}",
   })
   proposal__action__arguments: string[];
 
   /// Proposal config
-  @Column()  // Assuming maximum value of BigUint as 10^40-1
+  @Column() // Assuming maximum value of BigUint as 10^40-1
   proposal__config__min_power_for_propose: string;
 
   @Column()

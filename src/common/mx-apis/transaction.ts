@@ -19,7 +19,11 @@ export async function txCount(address: string): Promise<number> {
   return await req.json();
 }
 
-export async function TxHashes(address: string, from: number, size: number): Promise<string[]> {
+export async function TxHashes(
+  address: string,
+  from: number,
+  size: number
+): Promise<string[]> {
   const req = `${config.getApiUrl()}/accounts/${address}/transfers?from=${from}&size=${size}`;
   const txResponse = await fetch(req);
   return ((await txResponse.json()) as any[])
@@ -43,7 +47,10 @@ export async function getTransactionDetail(hash: string): Promise<any> {
   return (await txResponse.json()) as any[];
 }
 
-export async function filterEvent(trackingEvent: string[], data: any): Promise<Event[] | undefined> {
+export async function filterEvent(
+  trackingEvent: string[],
+  data: any
+): Promise<Event[] | undefined> {
   if (data.logs.events != undefined) {
     let events = data.logs.events;
 
