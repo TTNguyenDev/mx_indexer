@@ -74,33 +74,3 @@ database:
   username: "typeormtest"
   password: "password"
   name: "typeormtest"
-features:
-  publicApi:
-    enabled: true
-    port: 3001
-  privateApi:
-    enabled: true
-    port: 4000
-  cacheWarmer:
-    enabled: true
-    port: 5201
-  transactionProcessor:
-    enabled: true
-    port: 5202
-    maxLookBehind: 100
-  queueWorker:
-    enabled: true
-    port: 8000
-  keepAliveAgent:
-    enabled: true
-nativeAuth:
-  maxExpirySeconds:
-  acceptedOrigins:
-    - utils.multiversx.com
-security:
-  admins:
-rateLimiterSecret:
-keepAliveTimeout:
-  downstream: 61000
-  upstream: 60000
-useCachingInterceptor: false
