@@ -168,7 +168,7 @@ export class DaoCrawlerService {
       let begin = await this.getCheckpoint();
 
       console.log(txCount);
-      if (txCount <= begin + 1 /*Because checkpoint starts from zero*/) {
+      if (txCount <= begin) {
         console.log("All txs were crawled");
         await sleep(3000);
         continue;
@@ -176,7 +176,10 @@ export class DaoCrawlerService {
       const size = this.config.getBatchSize();
 
       for (let from = begin; from < txCount; from += size) {
-        const txHashes = await mxApis.TxHashes(this.address, from, size);
+        const result = await mxApis.TxHashes(this.address, from, size);
+        const txHashes = result[0];
+        const count = result[1];
+        console.log(`Crawling tx from ${from} count ${txCount}: ${JSON.stringify(txHashes)}`);
         let acceptedEvents: mxApis.Event[] = [];
         for (const hash of txHashes) {
           let txDetails = await mxApis.getTransactionDetail(hash);
@@ -187,7 +190,7 @@ export class DaoCrawlerService {
         //saveToDb will be call after crawling each batch
         //TODO: checkpoint need to be saved
         await this.saveToDb(acceptedEvents);
-        await this.saveCheckpoint(txHashes.length);
+        await this.saveCheckpoint(count);
       }
     }
   }

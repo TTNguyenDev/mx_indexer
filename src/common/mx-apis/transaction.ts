@@ -23,10 +23,12 @@ export async function TxHashes(
   address: string,
   from: number,
   size: number
-): Promise<string[]> {
+): Promise<[string[], number]> {
   const req = `${config.getApiUrl()}/accounts/${address}/transfers?from=${from}&size=${size}`;
+  console.log(req)
   const txResponse = await fetch(req);
-  return ((await txResponse.json()) as any[])
+  const jsonResponse = await txResponse.json() as any[];
+  return [jsonResponse
     .map((tx: any) => {
       if (tx.status == "success") {
         if (tx.type == "SmartContractResult") {
@@ -38,7 +40,7 @@ export async function TxHashes(
         return undefined;
       }
     })
-    .filter((v) => v !== undefined);
+    .filter((v) => v !== undefined), jsonResponse.length];
 }
 
 export async function getTransactionDetail(hash: string): Promise<any> {
