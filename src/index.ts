@@ -5,8 +5,6 @@ import { createConnection } from "typeorm";
 
 import { typeOrmConfig } from "./config";
 import * as Crawler from "./crawler";
-// import { ApiConfigService } from "./common/api-config/api.config.service";
-// import { ConfigService } from "@nestjs/config";
 import { readConfig } from "./../config/configuration";
 import { Config } from "./common/config";
 
