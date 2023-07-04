@@ -20,11 +20,12 @@ export function decodeU8(str: string): number {
     .toFixed(0);
 }
 
-export function decodeBigUint(str: string): number {
+export function decodeBigUint(str: string): string {
   return new BinaryCodec()
     .decodeTopLevel(Buffer.from(str, "base64"), new BigUIntType())
     .valueOf()
-    .toFixed(0);
+    .toFixed(0)
+    .toString();
 }
 
 export function decodeAddress(str: string): string {
