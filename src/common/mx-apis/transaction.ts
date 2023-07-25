@@ -1,6 +1,6 @@
 import { Config } from "../config";
 
-let config = new Config("./config/config.devnet.alpha.yaml");
+let config = new Config("./config/config.yaml");
 
 // Common Event Interface
 export interface Event {
