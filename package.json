@@ -32,6 +32,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build:commonjs": "rimraf lib && tsc --target es5 --outDir lib --module commonjs --declaration",
     "build:es": "rimraf es && tsc --target es6 --outDir es --module es6",
+    "start:devnet": "yarn copy-devnet-config && ts-node src/",
+    "start:testnet": "yarn copy-testnet-config && ts-node src/",
     "start:devnet-alpha": "yarn copy-devnet-alpha-config && ts-node src/",
     "start:devnet-beta": "yarn copy-devnet-beta-config && ts-node src/",
     "prepare": "yarn build && husky install",
