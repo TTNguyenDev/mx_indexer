@@ -1,10 +1,10 @@
-import * as yaml from 'js-yaml';
-import * as fs from 'fs';
+import * as yaml from "js-yaml";
+import * as fs from "fs";
 
 export class Config {
   data: Record<string, any>;
   constructor(filename: string) {
-    this.data = yaml.load(fs.readFileSync(filename, 'utf8')) as Record<
+    this.data = yaml.load(fs.readFileSync(filename, "utf8")) as Record<
       string,
       any
     >;
@@ -20,16 +20,16 @@ export class Config {
   }
 
   getContractAbiPath(key: string): string {
-    console.log(this.data['abi'][key][0]);
-    const contractApiPath = this.data['abi'][key][0];
+    console.log(this.data["abi"][key][0]);
+    const contractApiPath = this.data["abi"][key][0];
     if (!contractApiPath) {
       throw new Error(`No contract abi path present - ${key}`);
     }
     return contractApiPath;
   }
 
-  getContractAddress(key: string): string {
-    const contractAddress = this.data['wallet'][key][0];
+  getContractAddress(key: string): string[] {
+    const contractAddress = this.data["wallet"][key];
     if (!contractAddress) {
       throw new Error(`No contract address present - ${key}`);
     }
@@ -37,7 +37,7 @@ export class Config {
   }
 
   getBatchSize(): number {
-    const batchSize = this.data['batchSize'];
+    const batchSize = this.data["batchSize"];
     if (!batchSize) {
       throw new Error(`No batchsize config present`);
     }
@@ -45,7 +45,7 @@ export class Config {
   }
 
   getDbConfig(key: string): any {
-    const config = this.data['database'][key];
+    const config = this.data["database"][key];
     if (!config) {
       throw new Error(`No Db config - ${key}`);
     }
