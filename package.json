@@ -1,5 +1,5 @@
 {
-  "name": "typeorm-postgres-example",
+  "name": "mxbi_crawler_template",
   "version": "1.0.0",
   "main": "dist/index.js",
   "engines": {
@@ -7,6 +7,7 @@
   },
   "license": "Unlicense",
   "devDependencies": {
+    "@types/rimraf": "^5.0.1",
     "@types/chai": "^4.3.5",
     "@types/js-yaml": "^4.0.5",
     "@types/mocha": "^10.0.1",
